@@ -5,17 +5,6 @@ class Controller {
     protected string $path;
     protected array $route = [
         '/' => 'Home::index',
-        '/categories/set' => 'categories::set',
-        '/categories/get' => 'categories::get',
-        '/categories/get/(:num)' => 'categories::get',
-        '/categories/delete/(:num)' => 'categories::delete',
-        '/sites/set' => 'Site::set',
-        '/sites/get' => 'Site::get',
-        '/sites/get/(:num)' => 'Site::get',
-        '/sites/get_by_name/(:text)' => 'Site::getByName',
-        '/sites/delete/(:num)' => 'Site::delete',
-        '/sites/getbycategories/(:num)' => 'Site::getListByCategories',
-        '/sites/validDir' => 'Site::validSiteUrl',
     ];
     protected array $route_error = [
         '404' => 'error/error'

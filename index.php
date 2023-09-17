@@ -13,7 +13,7 @@
     $controller = new Controller($path);
 
     if($controller->callablePagePath != 'json'){
-        extract(dataCompleted($controller->dataPage,true));
+        extract($controller->dataPage);
 
         @include_once $controller->callablePagePath;
     }
