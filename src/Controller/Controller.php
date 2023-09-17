@@ -114,7 +114,7 @@ class Controller {
 
     }
 
-    private function is_valid_arg($type,$arg)
+    private function is_valid_arg($type,$arg): int|string|null
     {
         switch ($type) {
             case '(:num)':
