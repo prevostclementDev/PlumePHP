@@ -1,0 +1,9 @@
+# LIBRARY DOCUMENT
+node_modules/
+vendor/
+
+# Environnement variable
+.env
+
+# IDE document
+.idea/
