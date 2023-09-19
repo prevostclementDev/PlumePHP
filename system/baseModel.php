@@ -1,6 +1,6 @@
 <?php
 
-abstract class database {
+abstract class baseModel {
 
     protected ?PDO $cursor;
     public string $table;
@@ -10,12 +10,12 @@ abstract class database {
         $this->cursor = new PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
     }
 
-    public function setTable(string $table): database
+    public function setTable(string $table): baseModel
     {
         $this->table = $table;
         return $this;
     }
-    public function setField(Array $field): database
+    public function setField(Array $field): baseModel
     {
         $this->field = $field;
         return $this;

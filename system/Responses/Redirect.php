@@ -9,9 +9,11 @@ class Redirect {
     {
         $this->url = $url;
         $this->pathController = $pathController;
+
         if($exec) {
             $this->exec();
         }
+
     }
 
     public function exec() : string {
