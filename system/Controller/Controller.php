@@ -4,19 +4,61 @@ namespace system\Controller;
 
 use system\Services\Routes;
 
+/**
+ * The `Controller` class in the PlumePHP framework is responsible for processing routes and triggering controller actions.
+ * It handles route validation, controller execution, and error handling.
+ */
 class Controller {
 
+    /**
+     * The requested path.
+     *
+     * @var string
+     */
     protected string $path;
+
+    /**
+     * An array of registered routes.
+     *
+     * @var array
+     */
     protected array $route;
+
+    /**
+     * An array of error routes, with keys representing error types (e.g., '404') and values representing error page paths.
+     *
+     * @var array
+     */
     protected array $route_error = [
         '404' => 'error/error'
     ];
 
+    /**
+     * The base path for views.
+     *
+     * @var string
+     */
     private string $page_path;
 
+    /**
+     * The path to the callable page.
+     *
+     * @var string
+     */
     public string $callablePagePath;
+
+    /**
+     * An array to store data to be passed to the callable page.
+     *
+     * @var array
+     */
     public array $dataPage = [];
 
+    /**
+     * Constructor for the `Controller` class.
+     *
+     * @param string $path The requested path.
+     */
     public function __construct(string $path){
         $this->path = $path;
         $this->page_path = BASE_PATH.'/app/views/';
@@ -24,11 +66,14 @@ class Controller {
         $this->getRequestPage();
     }
 
+    /**
+     * Processes the requested page, including route validation, controller execution, and rendering.
+     */
     private function getRequestPage() : void {
         $valid = $this->is_valid_path();
         if($valid[0]) {
 
-            $callable = $this->getCallableMethode($valid[1]);
+            $callable = $this->getCallableMethod($valid[1]);
             $className = '\app\Controller\\'.$callable[0];
 
             $controllerCallable = new $className;
@@ -61,19 +106,41 @@ class Controller {
         $this->callablePagePath = $this->PageNotFound();
     }
 
+    /**
+     * Returns the page path for the 'Page Not Found' error.
+     *
+     * @return string The path to the 'Page Not Found' error page.
+     */
     private function PageNotFound() : string {
         return $this->getPage($this->route_error['404']);
     }
 
-    private function getCallableMethode($path): array {
-        return explode('::',$this->route[$path]);
+    /**
+     * Splits a route into the controller class and method.
+     *
+     * @param string $path The route to be split.
+     * @return array An array with two elements: the controller class and method.
+     */
+    private function getCallableMethod(string $path): array {
+        return explode('::', $this->route[$path]);
     }
 
+    /**
+     * Generates the full path to a view page based on the provided page name.
+     *
+     * @param string $page The page name.
+     * @return string The full path to the view page.
+     */
     private function getPage(string $page) : string {
-        return $this->page_path.$page.'.php';
+        return $this->page_path . $page . '.php';
     }
 
-    private function is_valid_path() : array{
+    /**
+     * Validates whether the requested path matches a registered route.
+     *
+     * @return array An array indicating if the path is valid and additional data if applicable.
+     */
+    private function is_valid_path() : array {
         if(key_exists($this->path,$this->route)) {
             return array(true,$this->path);
         }
@@ -100,15 +167,20 @@ class Controller {
                         return array(true,$item,$args,);
                     }
                 }
-
             }
         }
 
         return array(false);
-
     }
 
-    private function is_valid_arg($type,$arg)
+    /**
+     * Validates and processes arguments based on their type.
+     *
+     * @param string $type The argument type (e.g., '(:num)', '(:text)').
+     * @param mixed $arg The argument value.
+     * @return int|string|null The processed argument or null if it's not valid.
+     */
+    private function is_valid_arg($type, $arg): int|string|null
     {
         switch ($type) {
             case '(:num)':
@@ -126,17 +198,32 @@ class Controller {
         return null;
     }
 
+    /**
+     * Redirects to the requested page.
+     */
     private function redirect(): void {
         $this->getRequestPage();
     }
 
-    private function array_search_partial($arr, $keyword) {
+    /**
+     * Searches for a partial match in an array.
+     *
+     * @param array $arr The array to search in.
+     * @param string $keyword The keyword to search for.
+     * @return int|null The index of the partial match or null if not found.
+     */
+    private function array_search_partial(array $arr, string $keyword): ?int {
         foreach($arr as $index => $string) {
-            if (str_contains($string, $keyword))
+            if (str_contains($string, $keyword)) {
                 return $index;
+            }
         }
+        return null;
     }
 
+    /**
+     * Retrieves and sets the registered routes from the 'app/config/route.php' file.
+     */
     private function getSetRoutes(): void {
         require_once BASE_PATH.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'route.php';
         $this->route = Routes::getRoute();
