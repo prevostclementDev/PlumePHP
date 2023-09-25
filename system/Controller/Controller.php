@@ -2,12 +2,12 @@
 
 namespace system\Controller;
 
+use system\Services\Routes;
+
 class Controller {
 
     protected string $path;
-    protected array $route = [
-        '/' => 'Home::index',
-    ];
+    protected array $route;
     protected array $route_error = [
         '404' => 'error/error'
     ];
@@ -20,6 +20,7 @@ class Controller {
     public function __construct(string $path){
         $this->path = $path;
         $this->page_path = BASE_PATH.'/app/views/';
+        $this->getSetRoutes();
         $this->getRequestPage();
     }
 
@@ -134,6 +135,11 @@ class Controller {
             if (str_contains($string, $keyword))
                 return $index;
         }
+    }
+
+    private function getSetRoutes(): void {
+        require_once BASE_PATH.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'route.php';
+        $this->route = Routes::getRoute();
     }
 
 }
