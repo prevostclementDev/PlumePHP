@@ -1,5 +1,7 @@
 <?php
 
+namespace system;
+
 class Filters {
 
     protected array $filterBefore = array(

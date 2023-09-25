@@ -1,5 +1,7 @@
 <?php
 
+namespace system\Responses;
+
 class JsonResponse {
 
     protected array $data;

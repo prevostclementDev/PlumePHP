@@ -1,5 +1,7 @@
 <?php
 
+namespace system;
+
 abstract class baseModel {
 
     protected ?PDO $cursor;

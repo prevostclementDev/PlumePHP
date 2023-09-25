@@ -1,5 +1,7 @@
 <?php
 
+namespace system\Controller;
+
 class Controller {
 
     protected string $path;
@@ -17,7 +19,7 @@ class Controller {
 
     public function __construct(string $path){
         $this->path = $path;
-        $this->page_path = BASE_PATH.'/views/';
+        $this->page_path = BASE_PATH.'/app/views/';
         $this->getRequestPage();
     }
 
@@ -26,7 +28,9 @@ class Controller {
         if($valid[0]) {
 
             $callable = $this->getCallableMethode($valid[1]);
-            $controllerCallable = new $callable[0];
+            $className = '\app\Controller\\'.$callable[0];
+
+            $controllerCallable = new $className;
             if(isset($valid[2])) {
                 $newPageData = $controllerCallable->{$callable[1]}($valid[2]);
             } else {

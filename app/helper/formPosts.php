@@ -1,5 +1,7 @@
 <?php
 
+    namespace app\helper;
+
     function postArrayCheck(array $arrayRequire)  : bool {
         foreach ($arrayRequire as $key => $item){
             if(!isset($_POST[$key]) || $_POST[$key] === '') {

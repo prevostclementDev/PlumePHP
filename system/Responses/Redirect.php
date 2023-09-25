@@ -1,5 +1,7 @@
 <?php
 
+namespace system\Responses;
+
 class Redirect {
 
     private string $url;
