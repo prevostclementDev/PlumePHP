@@ -38,7 +38,7 @@ class Controller {
      *
      * @var string
      */
-    private string $page_path;
+    private string $page_path = BASE_PATH.'/app/views/';
 
     /**
      * The path to the callable page.
@@ -60,50 +60,69 @@ class Controller {
      * @param string $path The requested path.
      */
     public function __construct(string $path){
+
         $this->path = $path;
-        $this->page_path = BASE_PATH.'/app/views/';
+
         $this->getSetRoutes();
+
         $this->getRequestPage();
+
     }
 
     /**
      * Processes the requested page, including route validation, controller execution, and rendering.
      */
     private function getRequestPage() : void {
+
         $valid = $this->is_valid_path();
+
+        // if PATH is valid for the App
         if($valid[0]) {
 
+            // Get method with class $valid[1] = value of array self::$route
             $callable = $this->getCallableMethod($valid[1]);
+
+            // construct method
             $className = '\app\Controller\\'.$callable[0];
 
+            // call method
             $controllerCallable = new $className;
+
+            // $valid[2] = $args for the method.
             if(isset($valid[2])) {
                 $newPageData = $controllerCallable->{$callable[1]}($valid[2]);
             } else {
                 $newPageData = $controllerCallable->{$callable[1]}();
             }
 
+
+            // If controller return is Redirect reload process
             if(is_a($newPageData,'Redirect')) {
                 $this->path = $newPageData->exec();
                 $this->redirect();
                 return;
             }
 
+            // If controller return is JsonResponse
             if(is_a($newPageData, 'JsonResponse')) {
                 $newPageData->render();
                 $this->callablePagePath = 'json';
                 return;
             }
 
+            // $newPageData[0] == path to view in folder app/views.
             $this->callablePagePath = $this->getPage($newPageData[0]);
 
+            // $newPageData[1] = data for the page.
             if(isset($newPageData[1])) {
                 $this->dataPage = $newPageData[1];
             }
 
             return;
         }
+
         $this->callablePagePath = $this->PageNotFound();
+
     }
 
     /**
@@ -112,6 +131,7 @@ class Controller {
      * @return string The path to the 'Page Not Found' error page.
      */
     private function PageNotFound() : string {
+        // get 404 page error route
         return $this->getPage($this->route_error['404']);
     }
 
@@ -141,17 +161,22 @@ class Controller {
      * @return array An array indicating if the path is valid and additional data if applicable.
      */
     private function is_valid_path() : array {
+        // If page exist in self::$route
         if(key_exists($this->path,$this->route)) {
             return array(true,$this->path);
         }
 
+        // check for route with $args
         foreach ($this->route as $item => $value) {
+
             $pathExplode = explode('/',$this->path);
+
+            // if we have $args in URL.
             if(str_contains($item,'(:')) {
                 $itemExplode = explode('/',$item);
 
                 if(count($pathExplode) != count($itemExplode)) {
-                    return array(false);
+                    continue;
                 }
 
                 $search = 0;
@@ -162,11 +187,20 @@ class Controller {
                 }
 
                 if($search == count($itemExplode) - 1) {
-                    $args = $this->is_valid_arg($itemExplode[$this->array_search_partial($itemExplode,'(:')],$pathExplode[$this->array_search_partial($itemExplode,'(:')]);
+
+                    $args = $this->is_valid_arg(
+                        $itemExplode[$this->array_search_partial($itemExplode,'(:')],
+                        $pathExplode[$this->array_search_partial($itemExplode,'(:')]
+                    );
+
                     if($args !== null){
+
                         return array(true,$item,$args,);
+
                     }
+
                 }
+
             }
         }
 
@@ -180,7 +214,7 @@ class Controller {
      * @param mixed $arg The argument value.
      * @return int|string|null The processed argument or null if it's not valid.
      */
-    private function is_valid_arg($type, $arg): int|string|null
+    private function is_valid_arg(string $type, mixed $arg): int|string|null
     {
         switch ($type) {
             case '(:num)':
@@ -190,8 +224,7 @@ class Controller {
                 }
                 break;
             case '(:text)':
-                $arg = strval($arg);
-                return $arg;
+                return strval($arg);
             default:
                 return null;
         }
@@ -202,6 +235,7 @@ class Controller {
      * Redirects to the requested page.
      */
     private function redirect(): void {
+        // reload process
         $this->getRequestPage();
     }
 
