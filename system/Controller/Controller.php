@@ -214,8 +214,7 @@ class Controller {
      * @param mixed $arg The argument value.
      * @return int|string|null The processed argument or null if it's not valid.
      */
-    private function is_valid_arg(string $type, mixed $arg): int|string|null
-    {
+    private function is_valid_arg(string $type, mixed $arg): int|string|null {
         switch ($type) {
             case '(:num)':
                 $arg = intval($arg);

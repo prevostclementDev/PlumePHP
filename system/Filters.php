@@ -21,9 +21,7 @@ class Filters {
      *
      * @var array
      */
-    protected array $filterBefore = array(
-//        'Auth' => ['PATH','Auth::is_logged','/'],
-    );
+    public static array $filterBefore = array();
 
     /**
      * An associative array that keeps track of affected paths by filters.
@@ -39,6 +37,9 @@ class Filters {
      * It initiates filter processing by calling `applyFilterBefore`.
      */
     public function __construct(){
+
+        require_once BASE_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'filter.php';
+
         $this->applyFilterBefore();
     }
 
@@ -61,7 +62,7 @@ class Filters {
      */
     public function applyRedirectPath() : string {
         $redirect = new Redirect(
-                substr(BASE_URI, 0, -1) . $this->filterAffected['PATH'][count($this->filterAffected['PATH']) - 1],
+                BASE_URI . $this->filterAffected['PATH'][count($this->filterAffected['PATH']) - 1],
                 $this->filterAffected['PATH'][count($this->filterAffected['PATH'])-1],
                 false
         );
@@ -73,11 +74,23 @@ class Filters {
      */
     private function applyFilterBefore(): void
     {
-        foreach ($this->filterBefore as $callable) {
-            $return = call_user_func($callable[1]);
+        foreach (self::$filterBefore as $callable) {
+
+            if(PATH != $callable[2] && $callable[2] != '*') {
+                continue;
+            }
+
+            $explodeCallable = explode('::',$callable[1]);
+
+            $callableNamespace = 'app\Filters\\' . $explodeCallable[0];
+
+            $filterClass = new $callableNamespace;
+            $return = $filterClass->{$explodeCallable[1]}();
+
             if($return === true) {
                 continue;
             }
+
             $this->filterAffected[$callable[0]][] = $return;
         }
     }
