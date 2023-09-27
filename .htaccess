@@ -19,6 +19,5 @@ Options -Indexes
 	RewriteCond %{HTTP:Authorization} .
 	RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-#	RewriteRule ^.*\.php$ - [F,L,NC]
 	RewriteRule ^.env$ - [F,L,NC]
 </IfModule>
