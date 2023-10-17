@@ -2,7 +2,6 @@
 
 namespace system\Controller;
 
-use system\Services\Helper;
 use system\Services\Routes;
 
 defined( 'PATH' ) || die(':)');

@@ -1,6 +1,6 @@
 <?php
 
-namespace system;
+namespace system\Services;
 
 use system\Responses\Redirect;
 
@@ -76,10 +76,28 @@ class Filters {
      */
     private function applyFilterBefore(): void
     {
+
         foreach (self::$filterBefore as $callable) {
 
-            if(PATH != $callable[2] && $callable[2] != '*') {
+            if(str_contains($callable[2],'*')) {
+
+                if(strlen($callable[2]) > 1) {
+
+                    $explodeActualPath = explode( explode('*',$callable[2] )[0] ,PATH);
+
+                    $isEqualToCallable = $explodeActualPath[0] === substr($callable[2],0,-2);
+                    $isEqualToPath = $explodeActualPath[0] === PATH && count($explodeActualPath) === 1;
+
+                    if ( !$isEqualToCallable && $isEqualToPath ) {
+                        continue;
+                    }
+
+                }
+
+            } else if ( PATH != $callable[2] ) {
+
                 continue;
+
             }
 
             $explodeCallable = explode('::',$callable[1]);
@@ -94,7 +112,9 @@ class Filters {
             }
 
             $this->filterAffected[$callable[0]][] = $return;
+
         }
+
     }
 
 }

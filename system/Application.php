@@ -5,6 +5,7 @@ namespace system;
 use Dotenv\Dotenv;
 use system\Controller\Controller;
 use system\Services\Helper;
+use system\Services\Filters;
 
 /**
  * PlumePHP Application Class Documentation
