@@ -2,7 +2,10 @@
 
 namespace system\Controller;
 
+use system\Services\Helper;
 use system\Services\Routes;
+
+defined( 'PATH' ) || die(':)');
 
 /**
  * The `Controller` class in the PlumePHP framework is responsible for processing routes and triggering controller actions.

@@ -5,6 +5,8 @@ namespace system;
 use PDO;
 use PDOStatement;
 
+defined( 'PATH' ) || die(':)');
+
 /**
  * This abstract base model class provides a foundation for performing database operations within the PlumePHP framework.
  * It facilitates database connections, table management, and common CRUD operations for project models.

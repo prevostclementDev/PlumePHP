@@ -1,6 +1,8 @@
 <?php
 namespace system\Services;
 
+defined( 'PATH' ) || die(':)');
+
 /**
  * The `Routes` class in the PlumePHP framework is responsible for managing user-defined routes.
  * It allows users to add routes and error routes, and provides a method to retrieve all registered routes.

@@ -4,7 +4,7 @@ namespace system;
 
 use Dotenv\Dotenv;
 use system\Controller\Controller;
-use system\Filters;
+use system\Services\Helper;
 
 /**
  * PlumePHP Application Class Documentation
@@ -33,6 +33,10 @@ class Application
 
         // Start the PHP session
         session_start();
+
+        // load helpers
+        $this->loadBasicHelper();
+
     }
 
     /**
@@ -113,4 +117,15 @@ class Application
             require_once $classPath;
         }
     }
+
+
+    /*
+     * Load the systemHelper.
+    */
+    protected function loadBasicHelper() : void {
+        $helperServiceInstance = new Helper();
+
+        $helperServiceInstance->getFromSystem('viewSetup');
+    }
+
 }

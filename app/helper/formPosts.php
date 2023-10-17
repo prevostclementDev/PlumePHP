@@ -1,5 +1,7 @@
 <?php
 
+    defined( 'PATH' ) || die(':)');
+
     /*
      * Utility formPosts Functions
      *

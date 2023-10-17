@@ -4,6 +4,8 @@ namespace system;
 
 use system\Responses\Redirect;
 
+defined( 'PATH' ) || die(':)');
+
 /**
  * The `Filters` class in the PlumePHP framework handles pre-route filtering and redirections.
  * It allows for defining filters to be executed before certain routes and manages affected paths.

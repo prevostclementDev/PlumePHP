@@ -2,6 +2,8 @@
 
 namespace system\Responses;
 
+defined( 'PATH' ) || die(':)');
+
 /**
  * The `JsonResponse` class in the PlumePHP framework is responsible for sending JSON responses.
  * It allows you to create and send JSON-encoded data as responses.

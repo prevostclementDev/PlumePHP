@@ -3,6 +3,8 @@
 namespace app\config;
 use system\Filters;
 
+defined( 'PATH' ) || die(':)');
+
 /*
  * Configuration: Filters
  *

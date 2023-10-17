@@ -3,6 +3,8 @@
 namespace app\config;
 use \system\Services\Routes;
 
+defined( 'PATH' ) || die(':)');
+
 /*
  * Route Configuration
  *

@@ -2,6 +2,8 @@
 
 namespace system\Responses;
 
+defined( 'PATH' ) || die(':)');
+
 /**
  * The `Redirect` class in the PlumePHP framework is responsible for sending redirects to controllers in the 'app\Controller' directory.
  * It enables changing the browser's URL and triggering controller execution.
