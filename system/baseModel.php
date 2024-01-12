@@ -52,7 +52,7 @@ abstract class baseModel {
             $reqs = $this->cursor->prepare($reqs);
         }
 
-        return $this->exec($reqs);
+        return $this->exec($reqs,true);
     }
 
     /**

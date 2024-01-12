@@ -56,13 +56,9 @@ class Application
         }
 
         // Initialize the controller
-        $controller = new Controller($path);
+        $controller = Controller::getInstance($path);
+        $controller->getRequestPage()->render();
 
-        if($controller->callablePagePath != 'json'){
-            // Extract data and include the callable page
-            extract($controller->dataPage);
-            @include_once $controller->callablePagePath;
-        }
     }
 
     /**
@@ -127,6 +123,8 @@ class Application
         $helperServiceInstance = new Helper();
 
         $helperServiceInstance->getFromSystem('viewSetup');
+        $helperServiceInstance->getFromSystem('responseCall');
+        $helperServiceInstance->getFromSystem('formPosts');
     }
 
 }

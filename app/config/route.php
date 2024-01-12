@@ -17,4 +17,5 @@ defined( 'PATH' ) || die(':)');
  * This maps the root URL ('/') to the 'index' method of the 'Home' controller.
  */
 
-Routes::addRoute('/','Home::index');
+
+Routes::addRoute('/(:num)/test/(:num)','Home::index');

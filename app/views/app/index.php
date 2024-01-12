@@ -1,6 +1,6 @@
 <?php
 
-    function content_body(){
+    function content_body(): void {
         ?>
 
         <?php includePart('navbar'); ?>

@@ -64,11 +64,10 @@ class Filters {
      */
     public function applyRedirectPath() : string {
         $redirect = new Redirect(
-                BASE_URI . $this->filterAffected['PATH'][count($this->filterAffected['PATH']) - 1],
                 $this->filterAffected['PATH'][count($this->filterAffected['PATH'])-1],
                 false
         );
-        return $redirect->exec();
+        return $redirect->render();
     }
 
     /**

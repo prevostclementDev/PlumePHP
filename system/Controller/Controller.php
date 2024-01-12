@@ -2,6 +2,8 @@
 
 namespace system\Controller;
 
+use system\Responses\Response;
+use system\Responses\View;
 use system\Services\Routes;
 
 defined( 'PATH' ) || die(':)');
@@ -35,46 +37,35 @@ class Controller {
         '404' => 'error/error'
     ];
 
-    /**
-     * The base path for views.
-     *
-     * @var string
-     */
-    private string $page_path = BASE_PATH.'/app/views/';
+    public Response $response;
 
-    /**
-     * The path to the callable page.
-     *
-     * @var string
-     */
-    public string $callablePagePath;
-
-    /**
-     * An array to store data to be passed to the callable page.
-     *
-     * @var array
-     */
-    public array $dataPage = [];
+    private static ?Controller $instance = null;
 
     /**
      * Constructor for the `Controller` class.
      *
      * @param string $path The requested path.
      */
-    public function __construct(string $path){
+    public function __construct(string $path) {
 
         $this->path = $path;
 
         $this->getSetRoutes();
 
-        $this->getRequestPage();
+    }
 
+    public static function getInstance (string $path) : Controller {
+        if( is_null( self::$instance ) ) {
+            self::$instance = new Controller($path);
+        }
+        return self::$instance;
     }
 
     /**
      * Processes the requested page, including route validation, controller execution, and rendering.
      */
-    private function getRequestPage() : void {
+    public function getRequestPage() : Response
+    {
 
         $valid = $this->is_valid_path();
 
@@ -84,57 +75,39 @@ class Controller {
             // Get method with class $valid[1] = value of array self::$route
             $callable = $this->getCallableMethod($valid[1]);
 
-            // construct method
+            // construct namespace of class
             $className = '\app\Controller\\'.$callable[0];
 
-            // call method
+            // call class
             $controllerCallable = new $className;
 
             // $valid[2] = $args for the method.
             if(isset($valid[2])) {
-                $newPageData = $controllerCallable->{$callable[1]}($valid[2]);
+                $this->response = $controllerCallable->{$callable[1]}(...$valid[2]);
             } else {
-                $newPageData = $controllerCallable->{$callable[1]}();
+                $this->response = $controllerCallable->{$callable[1]}();
             }
 
-
-            // If controller return is Redirect reload process
-            if(is_a($newPageData,'Redirect')) {
-                $this->path = $newPageData->exec();
-                $this->redirect();
-                return;
+            if(is_a($this->response,'system\Responses\Redirect')) {
+                $this->path = $this->response->render();
+                return $this->getRequestPage();
             }
 
-            // If controller return is JsonResponse
-            if(is_a($newPageData, 'JsonResponse')) {
-                $newPageData->render();
-                $this->callablePagePath = 'json';
-                return;
-            }
-
-            // $newPageData[0] == path to view in folder app/views.
-            $this->callablePagePath = $this->getPage($newPageData[0]);
-
-            // $newPageData[1] = data for the page.
-            if(isset($newPageData[1])) {
-                $this->dataPage = $newPageData[1];
-            }
-
-            return;
+            return $this->response;
         }
 
-        $this->callablePagePath = $this->PageNotFound();
+        return $this->PageNotFound();
 
     }
 
     /**
      * Returns the page path for the 'Page Not Found' error.
      *
-     * @return string The path to the 'Page Not Found' error page.
+     * @return Response The path to the 'Page Not Found' error page.
      */
-    private function PageNotFound() : string {
+    private function PageNotFound() : Response {
         // get 404 page error route
-        return $this->getPage($this->route_error['404']);
+        return new View($this->route_error['404']);
     }
 
     /**
@@ -145,16 +118,6 @@ class Controller {
      */
     private function getCallableMethod(string $path): array {
         return explode('::', $this->route[$path]);
-    }
-
-    /**
-     * Generates the full path to a view page based on the provided page name.
-     *
-     * @param string $page The page name.
-     * @return string The full path to the view page.
-     */
-    private function getPage(string $page) : string {
-        return $this->page_path . $page . '.php';
     }
 
     /**
@@ -169,41 +132,40 @@ class Controller {
         }
 
         // check for route with $args
-        foreach ($this->route as $item => $value) {
+        $pE = explode('/',$this->path);
 
-            $pathExplode = explode('/',$this->path);
+        foreach ($this->route as $routePath => $routeMethod) {
 
-            // if we have $args in URL.
-            if(str_contains($item,'(:')) {
-                $itemExplode = explode('/',$item);
+            $rE = explode('/',$routePath);
 
-                if(count($pathExplode) != count($itemExplode)) {
-                    continue;
-                }
+            $args = [];
 
-                $search = 0;
-                for ( $i = 0; $i < count($itemExplode) - 1 ; $i++ ) {
-                    if($itemExplode[$i] === $pathExplode[$i]) {
-                        $search++;
-                    }
-                }
+            if ( count($pE) === count($rE) ) {
 
-                if($search == count($itemExplode) - 1) {
+                $equalSegement = 0;
 
-                    $args = $this->is_valid_arg(
-                        $itemExplode[$this->array_search_partial($itemExplode,'(:')],
-                        $pathExplode[$this->array_search_partial($itemExplode,'(:')]
-                    );
+                foreach ($rE as $key => $rSegment) {
 
-                    if($args !== null){
-
-                        return array(true,$item,$args,);
-
+                    if ( $rSegment === $pE[$key] ) {
+                        $equalSegement++;
+                        continue;
                     }
 
+                    $newArgs = $this->is_valid_arg($rSegment,$pE[$key]);
+
+                    if ( preg_match('/\(:(.+)\)/',$rSegment,$matches) == 1 && $newArgs !== null ) {
+                        $args[] = $newArgs;
+                        $equalSegement++;
+                    }
+
+                }
+
+                if ( count($rE) === $equalSegement ) {
+                    return array(true,$routePath,$args);
                 }
 
             }
+
         }
 
         return array(false);
@@ -230,14 +192,6 @@ class Controller {
                 return null;
         }
         return null;
-    }
-
-    /**
-     * Redirects to the requested page.
-     */
-    private function redirect(): void {
-        // reload process
-        $this->getRequestPage();
     }
 
     /**

@@ -8,7 +8,7 @@ defined( 'PATH' ) || die(':)');
  * The `Redirect` class in the PlumePHP framework is responsible for sending redirects to controllers in the 'app\Controller' directory.
  * It enables changing the browser's URL and triggering controller execution.
  */
-class Redirect {
+class Redirect implements Response {
 
     /**
      * The target URL for the redirect.
@@ -27,17 +27,16 @@ class Redirect {
     /**
      * Constructor for the `Redirect` class.
      *
-     * @param string $url The target URL for the redirect.
-     * @param string $pathController The path to the controller that should handle the redirect.
+     * @param string $path The path to the controller that should handle the redirect.
      * @param bool $exec Whether to execute the redirect immediately (default is true).
      */
-    public function __construct(string $url, string $pathController, bool $exec = true)
+    public function __construct(string $path, bool $exec = true)
     {
-        $this->url = $url;
-        $this->pathController = $pathController;
+        $this->url = BASE_URI . $path;
+        $this->pathController = $path;
 
         if ($exec) {
-            $this->exec();
+            $this->render();
         }
     }
 
@@ -46,7 +45,7 @@ class Redirect {
      *
      * @return string Returns the path to the controller that should handle the redirect.
      */
-    public function exec(): string {
+    public function render(): string {
         ?>
         <script>
             window.history.replaceState('redirect', 'redirect', '<?= $this->url ?>');
