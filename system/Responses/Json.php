@@ -39,7 +39,7 @@ class Json implements Response {
      * @return bool|string Returns the JSON-encoded data as a string.
      */
     private function setup(): bool|string {
-        header('Content-Type: application/json; charset=utf-8');
+        setHeader('Content-Type','application/json; charset=utf-8');
         return json_encode($this->data);
     }
 

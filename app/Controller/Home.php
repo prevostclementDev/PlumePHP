@@ -7,8 +7,8 @@ use system\Responses\Response;
 class Home
 {
     public function index(int $id, int $id2) : Response {
-        var_dump($id,$id2);
-        return View('app/index');
+        status(404);
+        return Json([$id,$id2]);
     }
 
     public function redirect() : Response {

@@ -1,6 +1,6 @@
 <?php
 
-namespace system;
+namespace system\Database;
 
 use PDO;
 use PDOStatement;
@@ -31,7 +31,11 @@ abstract class baseModel {
      * Initializes the database connection using PDO.
      */
     public function __construct(){
-        $this->cursor = new PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
+        try {
+            $this->cursor = new PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
+        } catch (\PDOException $e) {
+            trigger_error('Fatal Error : database connection not valid', E_USER_ERROR);
+        }
     }
 
     /**

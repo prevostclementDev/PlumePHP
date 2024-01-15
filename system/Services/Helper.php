@@ -23,6 +23,7 @@ class Helper
      */
     protected string $helperPathSystem = BASE_PATH.DIRECTORY_SEPARATOR.'system'.DIRECTORY_SEPARATOR.'systemHelper'.DIRECTORY_SEPARATOR;
 
+    public static array $loadSystemHelper = [];
 
     /**
      * Constructor for the `Helper` class.
@@ -62,4 +63,23 @@ class Helper
         }
         return $this;
     }
+
+    public static function addSystemHelper ( string $name ): void {
+        self::$loadSystemHelper[] = $name;
+    }
+
+    public static function removeSystemHelper ( string $name ): void {
+
+        $key = array_search($name , self::$loadSystemHelper);
+
+        if( is_int($key) ) {
+            unset(self::$loadSystemHelper[$key]);
+        }
+
+    }
+
+    public static function getSystemHelper (): array {
+        return self::$loadSystemHelper;
+    }
+
 }

@@ -106,8 +106,8 @@ class Application
      *
      * @param string $className The name of the class to load.
      */
-    protected function init_autoload_system($className) : void {
-        $className = str_replace('\\',DIRECTORY_SEPARATOR,$className);
+    protected function init_autoload_system(string $className) : void {
+        $className = str_replace( '\\' , DIRECTORY_SEPARATOR , $className );
         $classPath = BASE_PATH.DIRECTORY_SEPARATOR.$className.'.php';
 
         if(is_file($classPath)) {
@@ -120,11 +120,28 @@ class Application
      * Load the systemHelper.
     */
     protected function loadBasicHelper() : void {
+
+        define("HELPER_STACK_GLOBAL", [
+            'viewSetup',
+            'responseCall',
+            'formPosts',
+        ]);
+
+        define("HELPER_STACK_API", [
+            'responseCall',
+            'formPosts',
+        ]);
+
+        require_once BASE_PATH . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'systemHelperLoader.php';
+
         $helperServiceInstance = new Helper();
 
-        $helperServiceInstance->getFromSystem('viewSetup');
-        $helperServiceInstance->getFromSystem('responseCall');
-        $helperServiceInstance->getFromSystem('formPosts');
+        foreach ( Helper::$loadSystemHelper as $needle ) {
+            $helperServiceInstance->getFromSystem($needle);
+        }
+
+        $helperServiceInstance->getFromSystem('header');
+
     }
 
 }
